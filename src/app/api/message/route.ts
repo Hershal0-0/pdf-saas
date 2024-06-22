@@ -56,7 +56,7 @@ export const POST = async (req: NextRequest) => {
   });
 
   const result = await vectorStore.similaritySearch(message, 4);
-  console.log(result);
+
   const prevMessages = await db.message.findMany({
     where: {
       fileId: fileId,
@@ -105,6 +105,7 @@ export const POST = async (req: NextRequest) => {
 
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
+      console.log(completion);
       await db.message.create({
         data: {
           text: completion,

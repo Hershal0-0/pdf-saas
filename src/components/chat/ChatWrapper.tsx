@@ -89,7 +89,7 @@ const ChatWrapper = ({ fileId }: ChatWrapperProps) => {
           <Messages fileId={fileId} />
         </div>
 
-        <ChatInput isDisabled={!isLoading} />
+        <ChatInput />
       </div>
     </ChatContextProvider>
   );

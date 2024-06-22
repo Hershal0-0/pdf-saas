@@ -1,15 +1,20 @@
+"use client";
 import { trpc } from "@/app/_trpc/client";
 import { INFINITE_QUERY_LIMIT } from "@/config/infinite-query";
 import { keepPreviousData } from "@tanstack/react-query";
 import { Loader2, MessageSquare } from "lucide-react";
-import React from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import Skeleton from "react-loading-skeleton";
 import Message from "./Message";
+import { ExtendedMessage } from "@/types/message";
+import { ChatContext } from "./ChatContext";
+import { useIntersection } from "@mantine/hooks";
 
 interface MessagesProps {
   fileId: string;
 }
 const Messages = ({ fileId }: MessagesProps) => {
+  const { isLoading: isAiThinking } = useContext(ChatContext);
   const { data, isLoading, fetchNextPage } =
     trpc.getFileMessages.useInfiniteQuery(
       {
@@ -22,7 +27,7 @@ const Messages = ({ fileId }: MessagesProps) => {
         placeholderData: keepPreviousData,
       }
     );
-  const loadingMessage = {
+  const loadingMessage: ExtendedMessage = {
     id: "loading-messages",
     isUserMessage: false,
     createdAt: new Date().toISOString(),
@@ -33,10 +38,24 @@ const Messages = ({ fileId }: MessagesProps) => {
     ),
   };
   const messages = data?.pages.flatMap((page) => page.messages);
+
   const combinedMessages = [
-    ...(true ? [loadingMessage] : []),
+    ...(isAiThinking ? [loadingMessage] : []),
     ...(messages ?? []),
   ];
+
+  const lastMessageRef = useRef<HTMLDivElement>(null);
+  const { ref, entry } = useIntersection({
+    root: lastMessageRef.current,
+    threshold: 1,
+  });
+
+  useEffect(() => {
+    if (entry?.isIntersecting) {
+      fetchNextPage();
+    }
+  }, [entry, fetchNextPage]);
+
   return (
     <div className="flex max-h-[calc(100vh-3.5rem-7rem)] border-zinc-200 flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch ">
       {combinedMessages && combinedMessages.length > 0 ? (
@@ -45,9 +64,22 @@ const Messages = ({ fileId }: MessagesProps) => {
             combinedMessages[i - 1]?.isUserMessage ===
             combinedMessages[i]?.isUserMessage;
           if (i === combinedMessages.length - 1) {
-            return <Message isUserMessage={message.isUserMessage} />;
+            return (
+              <Message
+                ref={ref}
+                key={message.id}
+                message={message}
+                isNextMessageSamePerson={isNextMessageSamePerson}
+              />
+            );
           } else {
-            return <Message isUserMessage={message.isUserMessage} />;
+            return (
+              <Message
+                key={message.id}
+                message={message}
+                isNextMessageSamePerson={isNextMessageSamePerson}
+              />
+            );
           }
         })
       ) : isLoading ? (
