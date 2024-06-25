@@ -7,7 +7,7 @@ import {
   Search,
 } from "lucide-react";
 import React, { useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useToast } from "./ui/use-toast";
@@ -30,11 +30,15 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import PdfFullscreen from "./PdfFullscreen";
 // import { render } from "react-dom";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import { Document, Page, pdfjs } from "react-pdf";
+// import worker from 'pdfjs-dist/webpack.mjs'
+// import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+
+// pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+//   "pdfjs-dist/build/pdf.worker.mjs",
+//   import.meta.url
+// ).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 
 interface PdfRendererProps {
   url: string;
