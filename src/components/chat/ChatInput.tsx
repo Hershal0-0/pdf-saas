@@ -7,7 +7,7 @@ import { ChatContext } from "./ChatContext";
 interface ChatInputProps {
   isDisabled?: boolean;
 }
-
+// a
 const ChatInput = ({ isDisabled }: ChatInputProps) => {
   const { addMessage, handleInputChange, isLoading, message } =
     useContext(ChatContext);
