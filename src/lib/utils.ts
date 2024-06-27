@@ -48,7 +48,7 @@ export function constructMetadata({
       creator: "@hershal_rao",
     },
     icons,
-    metadataBase: new URL("https://quill-jet.vercel.app"),
+    metadataBase: new URL("https://pdf-saas-eight.vercel.app"),
     // themeColor: "#FFF",
     ...(noIndex && {
       robots: {
